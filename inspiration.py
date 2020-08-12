@@ -5,6 +5,7 @@ import random
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 
+
 class Excel():
 
     def __init__(self, excel: str):
@@ -23,7 +24,8 @@ class Excel():
         for k, v in info.items():
             num = random.randint(0, v['length'] - 1)
             row = v['cell'][0]
-            key_words.append(self._sheet.cell(row + num, v['cell'][1]).value)
+            key_words.append(
+                str(self._sheet.cell(row + num, v['cell'][1]).value))
 
         return key_words
 
@@ -119,23 +121,27 @@ class Excel():
             del(self._book_write)
         del(self._book)
 
+    def each_sheet(self):
+        for i in range(len(self._book.sheets())):
+            self.select_sheet(i)
+            yield
+
 
 if __name__ == '__main__':
     excel = Excel('黑盒.xls')
     excel.upgrade()
-    excel.select_sheet_by_name('构图')
-    key_words = excel.get_key_words()
 
-    excel.select_sheet_by_name('主体')
-    key_word_2 = excel.get_key_words()
+    key_words = []
+    for i in excel.each_sheet():
+        key_words.extend(excel.get_key_words())
 
-    key_words.extend(key_word_2)
     print(key_words)
 
-    font = 'C:\Windows\Fonts\simfang.ttf'
-    wordcloud = WordCloud(font_path=font, background_color='white', width=1000, height=860, margin=2).generate_from_text(' '.join(key_words))
+    font = 'C:\Windows\Fonts\simhei.ttf'
+    wordcloud = WordCloud(
+        font_path=font, background_color='white', width=1000, height=860, margin=2)
+    wordcloud = wordcloud.generate_from_text(' '.join(key_words))
 
     plt.imshow(wordcloud)
     plt.axis("off")
     plt.show()
-    
