@@ -2,7 +2,8 @@ import xlrd
 import xlwt
 import xlutils.copy
 import random
-
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 class Excel():
 
@@ -123,8 +124,18 @@ if __name__ == '__main__':
     excel = Excel('黑盒.xls')
     excel.upgrade()
     excel.select_sheet_by_name('构图')
-    key_word_1 = excel.get_key_words()
+    key_words = excel.get_key_words()
 
     excel.select_sheet_by_name('主体')
     key_word_2 = excel.get_key_words()
-    print(key_word_1, key_word_2)
+
+    key_words.extend(key_word_2)
+    print(key_words)
+
+    font = 'C:\Windows\Fonts\simfang.ttf'
+    wordcloud = WordCloud(font_path=font, background_color='white', width=1000, height=860, margin=2).generate_from_text(' '.join(key_words))
+
+    plt.imshow(wordcloud)
+    plt.axis("off")
+    plt.show()
+    
